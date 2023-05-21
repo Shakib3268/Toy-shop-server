@@ -1,5 +1,5 @@
 const express = require('express');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
 require('dotenv').config()
 const app = express();
@@ -7,7 +7,7 @@ const port = process.env.PORT || 5000;
 
 // middleware
 app.use(cors());
-app.use(express());
+app.use(express.json());
 
 
 
@@ -26,6 +26,41 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
+    const toyCollection = client.db("toysPortal").collection("toys")
+
+
+
+    app.get("/mytoy",async (req,res) =>{
+      console.log(req.query.email)
+      let query = {}
+      if(req.query?.email){
+        query = {email: req.query.email}
+      }
+      const toy = await toyCollection.find(query).toArray()
+      res.send(toy)
+    })
+
+
+    app.get('/alltoy',async(req,res) =>{
+      const result = await toyCollection.find({}).toArray()
+      res.send(result)
+    })
+
+    app.post("/addtoy",async (req,res) => {
+        const body = req.body
+        if(!body){
+            return res.status(404).send({message: "body data not found"})
+        }
+        const result = await toyCollection.insertOne(body)
+        res.send(result)
+    })
+
+    app.delete('/mytoy/:id',async (req,res) =>{
+      const id = req.params.id 
+      const query = {_id : new ObjectId(id)}
+      const result = await toyCollection.deleteOne(query)
+      res.send(result)
+    })
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log("Pinged your deployment. You successfully connected to MongoDB!");
