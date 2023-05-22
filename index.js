@@ -28,7 +28,15 @@ async function run() {
      client.connect();
     const toyCollection = client.db("toysPortal").collection("toys")
 
-
+    app.get('/singletoy/:id',async(req,res) =>{
+      const id = req.params.id
+      const query = {_id : new ObjectId(id)}
+      const options = {
+        projection : {_id:0,price:1}
+      }
+      const result = await toyCollection.findOne(query,options)
+      res.send(result)
+    })
 
     app.get("/mytoy",async (req,res) =>{
       console.log(req.query.email)
