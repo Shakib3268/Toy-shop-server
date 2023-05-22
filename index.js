@@ -32,9 +32,9 @@ async function run() {
       const id = req.params.id
       const query = {_id : new ObjectId(id)}
       const options = {
-        projection : {_id:0,price:1}
+        projection : {_id:0,price:1,}
       }
-      const result = await toyCollection.findOne(query,options)
+      const result = await toyCollection.findOne(query)
       res.send(result)
     })
 
@@ -50,7 +50,7 @@ async function run() {
 
 
     app.get('/alltoy',async(req,res) =>{
-      const result = await toyCollection.find({}).toArray()
+      const result = await toyCollection.find({}).sort({price: -1}).toArray()
       res.send(result)
     })
 
