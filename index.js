@@ -33,6 +33,28 @@ async function run() {
 
     const result = await toyCollection.createIndex(indexKeys,indexOptions)
 
+    app.get('/updatetoy/:id',async (req,res) =>{
+      const id = req.params.id;
+      const query = {_id: new ObjectId(id)}
+      const result = await toyCollection.findOne(query);
+      res.send(result);
+    })
+
+    app.put('/updatetoy/:id',async (req,res) =>{
+      const id = req.params.id 
+      const filter = {_id : new ObjectId(id)}
+      const options = { upsert: true };
+      const updatedToy = req.body;
+      const toy = {
+        $set:{
+             quantity:updatedToy.quantity,
+             price:updatedToy.price,
+             description:updatedToy.description,
+        }
+      }
+      const result = await toyCollection.updateOne(filter,toy,options)
+      res.send(result)
+    })
 
     app.get('/toySearch/:text',async (req,res) => {
       const searchText = req.params.text;
@@ -66,7 +88,8 @@ async function run() {
     })
 
     app.get('/alltoy',async(req,res) =>{
-      const result = await toyCollection.find({}).sort({price: -1}).toArray()
+      const limit = parseInt(req.query.limit) || 20;
+      const result = await toyCollection.find({}).limit(limit).sort({price: 1}).toArray()
       res.send(result)
     })
     //add toy by value
