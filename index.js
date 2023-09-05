@@ -25,7 +25,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-     client.connect();
+    // await client.connect();
     const toyCollection = client.db("toysPortal").collection("toys")
     
     const indexKeys = {category : 1, Name : 1}
