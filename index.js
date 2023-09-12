@@ -87,11 +87,25 @@ async function run() {
       res.send(toy)
     })
 
-    app.get('/alltoy',async(req,res) =>{
-      const limit = parseInt(req.query.limit) || 20;
-      const result = await toyCollection.find({}).limit(limit).sort({price: 1}).toArray()
-      res.send(result)
-    })
+    app.get('/allToys', async (req, res) => {
+      let query = {};
+      // const sortReq = parseInt(req.query.sort);
+      // console.log(typeof(sortReq));
+         if (req.query?.email) {
+              query = {
+                  Email: req.query.email,
+              }
+          }
+          // const options = {
+          //     sort: { "price": sortReq },
+
+          // };
+      //    const cursor = allToysCollection.find(query, options).limit(20);
+         const cursor = toyCollection.find(query).limit(20);
+
+          const result = await cursor.toArray();
+          res.send(result);
+      })
     //add toy by value
     app.post("/addtoy",async (req,res) => {
         const body = req.body
